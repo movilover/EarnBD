@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>EarnBD - প্রতিদিন আয় করুন</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .page { display: none; }
+    .page-active { display: block; }
+    .btn-3d {
+      box-shadow: 0 10px 25px -5px rgb(16 185 129), 
+                  0 4px 10px -2px rgb(0 0 0 / 0.3),
+                  inset 0 -4px 8px -2px rgb(255 255 255 / 0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-3d:hover { transform: translateY(-3px); }
+    .btn-3d:active { transform: translateY(2px); }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen pb-20">
+
+  <!-- Header -->
+  <header class="bg-[#111113] border-b border-gray-800 sticky top-0 z-50">
+    <div class="max-w-xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center text-2xl">💰</div>
+        <div>
+          <h1 class="text-2xl font-bold">EarnBD</h1>
+          <p class="text-xs text-gray-400">Earn money every day</p>
+        </div>
+      </div>
+      <div onclick="showNotifications()" class="relative cursor-pointer">
+        <i class="fa-solid fa-bell text-2xl"></i>
+        <span class="absolute -top-1 -right-1 bg-red-500 text-xs w-4 h-4 rounded-full flex items-center justify-center">3</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- HOME PAGE -->
+  <div id="home" class="page page-active max-w-xl mx-auto px-4 pt-6">
+    <div class="text-center">
+      <p class="text-gray-400">স্বাগতম,</p>
+      <h2 class="text-3xl font-bold">Rahim Mia</h2>
+    </div>
+
+    <div class="mt-6 bg-gradient-to-br from-emerald-600 to-green-500 rounded-3xl p-7 text-center relative overflow-hidden">
+      <p class="text-emerald-100">আপনার ব্যালেন্স</p>
+      <p class="text-6xl font-bold mt-1">০</p>
+      <p class="text-emerald-100 text-sm">BDT</p>
+
+      <div class="mt-8 flex justify-between border-t border-white/20 pt-6">
+        <div><p class="text-emerald-100 text-sm">আজকের আয়</p><p class="font-bold text-2xl">০</p></div>
+        <div><p class="text-emerald-100 text-sm">মোট আয়</p><p class="font-bold text-2xl">০</p></div>
+      </div>
+    </div>
+
+    <div class="mt-8 bg-[#1a1a1f] rounded-3xl p-5">
+      <p class="text-sm text-gray-400 mb-2">আপনার রেফারেল লিংক</p>
+      <div class="flex gap-2">
+        <input id="ref-link" type="text" value="https://earnBD.app/ref/rahim123" 
+               class="bg-[#111113] flex-1 px-4 py-3.5 rounded-2xl text-sm focus:outline-none"/>
+        <button onclick="copyReferral()" class="btn-3d bg-emerald-500 px-7 rounded-2xl font-semibold text-sm">কপি</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mt-8">
+      <div class="bg-[#1a1a1f] rounded-3xl p-5 text-center btn-3d">
+        <i class="fa-solid fa-users text-3xl text-green-400"></i>
+        <p class="text-xs mt-3 text-gray-400">টিম</p>
+        <p class="text-2xl font-bold">০</p>
+      </div>
+      <div class="bg-[#1a1a1f] rounded-3xl p-5 text-center btn-3d">
+        <i class="fa-solid fa-link text-3xl text-green-400"></i>
+        <p class="text-xs mt-3 text-gray-400">রেফারেল</p>
+        <p class="text-2xl font-bold">০</p>
+      </div>
+      <div class="bg-[#1a1a1f] rounded-3xl p-5 text-center btn-3d">
+        <i class="fa-solid fa-trophy text-3xl text-amber-400"></i>
+        <p class="text-xs mt-3 text-gray-400">লেভেল</p>
+        <p class="text-2xl font-bold">১</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKS PAGE -->
+  <div id="tasks" class="page max-w-xl mx-auto px-4 pt-6">
+    <h2 class="text-2xl font-bold mb-6">আজকের টাস্ক</h2>
+    <div class="bg-[#1a1a1f] rounded-3xl p-5 flex gap-4 items-center btn-3d">
+      <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center text-4xl">📺</div>
+      <div class="flex-1">
+        <p class="font-semibold">Watch Ads (6 টি)</p>
+        <p class="text-sm text-gray-400">প্রতি অ্যাড = ১০ টাকা</p>
+      </div>
+      <button onclick="watchAd()" class="btn-3d bg-emerald-500 px-7 py-3 rounded-2xl text-sm font-semibold">অ্যাড দেখুন</button>
+    </div>
+  </div>
+
+  <!-- TEAM PAGE -->
+  <div id="team" class="page max-w-xl mx-auto px-4 pt-6">
+    <h2 class="text-2xl font-bold mb-6">আমার টিম (৩ লেভেল)</h2>
+    
+    <div onclick="showMembers(1)" class="team-card bg-[#1a1a1f] rounded-3xl p-6 mb-4 btn-3d cursor-pointer">
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Level 1 (Direct)</span>
+        <span class="text-emerald-400 font-bold">০ জন • ১০%</span>
+      </div>
+    </div>
+    <div onclick="showMembers(2)" class="team-card bg-[#1a1a1f] rounded-3xl p-6 mb-4 btn-3d cursor-pointer">
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Level 2</span>
+        <span class="text-emerald-400 font-bold">০ জন • ৫%</span>
+      </div>
+    </div>
+    <div onclick="showMembers(3)" class="team-card bg-[#1a1a1f] rounded-3xl p-6 btn-3d cursor-pointer">
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Level 3</span>
+        <span class="text-emerald-400 font-bold">০ জন • ২%</span>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-gray-500 mt-10">১৫ জন Direct Referral হলে Withdraw চালু হবে</p>
+  </div>
+
+  <!-- PLANS PAGE -->
+  <div id="plans" class="page max-w-xl mx-auto px-4 pt-6">
+    <h2 class="text-2xl font-bold mb-6">Plans</h2>
+    <div class="bg-[#1a1a1f] rounded-3xl p-6 border border-emerald-500/30">
+      <h3 class="text-xl font-bold flex items-center gap-2"><span class="text-yellow-400">🟡</span> Premium Plan</h3>
+      <p class="text-5xl font-bold mt-4">৪৯৯ ৳ <span class="text-xl font-normal text-gray-400">/ ৩০ days</span></p>
+      <button onclick="buyPlan()" class="btn-3d mt-8 w-full bg-emerald-500 py-5 rounded-3xl text-xl font-bold">Buy Now</button>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div id="profile" class="page max-w-xl mx-auto px-4 pt-6">
+    <div class="flex justify-center mt-8">
+      <div onclick="checkAdminClick()" class="w-32 h-32 rounded-3xl overflow-hidden border-4 border-[#0a0a0a] shadow-2xl cursor-pointer">
+        <img src="https://i.pravatar.cc/300?img=68" alt="Rahim Mia" class="w-full h-full object-cover"/>
+      </div>
+    </div>
+
+    <div class="text-center mt-6">
+      <h2 class="text-3xl font-bold">Rahim Mia</h2>
+      <p class="text-emerald-400">@rahim_earnbd</p>
+      <p class="text-gray-400 text-sm mt-1">User ID: BD7843921</p>
+    </div>
+
+    <div class="mt-8 bg-gradient-to-br from-emerald-600 to-green-500 rounded-3xl p-6 mx-2 text-center">
+      <p class="text-emerald-100 text-sm">আপনার ব্যালেন্স</p>
+      <p class="text-5xl font-bold text-white mt-2">০</p>
+      <p class="text-emerald-100">BDT</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mt-8 px-2">
+      <div class="bg-[#1a1a1f] rounded-3xl p-6 text-center">
+        <p class="text-gray-400 text-sm">Total income</p>
+        <p class="text-3xl font-bold text-emerald-400 mt-1">০</p>
+      </div>
+      <div class="bg-[#1a1a1f] rounded-3xl p-6 text-center">
+        <p class="text-gray-400 text-sm">Balance</p>
+        <p class="text-3xl font-bold mt-1">০</p>
+      </div>
+    </div>
+
+    <div class="bg-[#1a1a1f] rounded-3xl p-6 mt-8 mx-2 space-y-5 text-sm">
+      <div class="flex justify-between"><span class="text-gray-400">Join date</span><span>January 12, 2026</span></div>
+      <div class="flex justify-between"><span class="text-gray-400">Active Plan</span><span class="text-emerald-400">Premium (15 days left)</span></div>
+      <div class="flex justify-between"><span class="text-gray-400">bKash number</span><span class="text-emerald-400">01712-345678</span></div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mt-8 px-2">
+      <button onclick="editProfile()" class="btn-3d bg-[#1a1a1f] py-5 rounded-3xl font-semibold flex items-center justify-center gap-3">
+        <i class="fa-solid fa-pen-to-square"></i> Edit
+      </button>
+      <button onclick="showHistory()" class="btn-3d bg-[#1a1a1f] py-5 rounded-3xl font-semibold flex items-center justify-center gap-3">
+        <i class="fa-solid fa-clock-rotate-left"></i> History
+      </button>
+    </div>
+
+    <button onclick="showWithdrawModal()" 
+            class="btn-3d mt-8 w-full bg-gradient-to-r from-emerald-500 to-green-500 py-6 rounded-3xl text-xl font-bold flex items-center justify-center gap-3">
+      <i class="fa-solid fa-money-bill-wave"></i> Withdraw money
+    </button>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#111113] border-t border-gray-800 max-w-xl mx-auto">
+    <div class="flex justify-around py-3 text-xs">
+      <a onclick="switchPage('home')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white cursor-pointer">
+        <i class="fa-solid fa-house text-xl"></i><span>Home</span>
+      </a>
+      <a onclick="switchPage('tasks')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white cursor-pointer">
+        <i class="fa-solid fa-list-check text-xl"></i><span>Tasks</span>
+      </a>
+      <a onclick="switchPage('team')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white cursor-pointer">
+        <i class="fa-solid fa-users text-xl"></i><span>Team</span>
+      </a>
+      <a onclick="switchPage('plans')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white cursor-pointer">
+        <i class="fa-solid fa-gem text-xl"></i><span>Plans</span>
+      </a>
+      <a onclick="switchPage('profile')" class="flex flex-col items-center gap-1 text-emerald-400 cursor-pointer">
+        <i class="fa-solid fa-user text-xl"></i><span>Profile</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ADMIN MENU -->
+  <div id="adminMenu" class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center">
+    <div class="bg-[#1a1a1f] w-full max-w-md mx-4 rounded-3xl p-8">
+      <h3 class="text-2xl font-bold text-center mb-8 text-emerald-400">Admin Panel</h3>
+      
+      <div class="space-y-3">
+        <button onclick="adminAction('users')" class="w-full bg-[#111113] hover:bg-emerald-500/20 py-5 rounded-2xl text-left px-6 font-medium">👥 Users Management</button>
+        <button onclick="adminAction('withdraw')" class="w-full bg-[#111113] hover:bg-emerald-500/20 py-5 rounded-2xl text-left px-6 font-medium">💸 Withdraw Requests</button>
+        <button onclick="adminAction('tasks')" class="w-full bg-[#111113] hover:bg-emerald-500/20 py-5 rounded-2xl text-left px-6 font-medium">📋 Tasks Management</button>
+        <button onclick="adminAction('plans')" class="w-full bg-[#111113] hover:bg-emerald-500/20 py-5 rounded-2xl text-left px-6 font-medium">💎 Plans Management</button>
+        <button onclick="adminAction('broadcast')" class="w-full bg-[#111113] hover:bg-emerald-500/20 py-5 rounded-2xl text-left px-6 font-medium">📢 Broadcast Message</button>
+        <button onclick="adminAction('fraud')" class="w-full bg-[#111113] hover:bg-emerald-500/20 py-5 rounded-2xl text-left px-6 font-medium">🚨 Fraud Logs</button>
+      </div>
+
+      <button onclick="closeAdminMenu()" class="mt-8 w-full bg-red-500 py-4 rounded-3xl font-semibold">Close Admin Menu</button>
+    </div>
+  </div>
+
+  <script>
+    let clickCount = 0;
+    const ADMIN_PASSWORD = "153781";
+
+    function switchPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+      document.getElementById(page).classList.add('page-active');
+    }
+
+    function copyReferral() {
+      const link = document.getElementById('ref-link');
+      link.select();
+      document.execCommand('copy');
+      alert('✅ রেফারেল লিংক কপি হয়েছে!');
+    }
+
+    function watchAd() {
+      alert("📺 অ্যাড দেখা শুরু হচ্ছে...");
+      setTimeout(() => alert("✅ অ্যাড সম্পন্ন! +১০ টাকা যোগ হয়েছে"), 2500);
+    }
+
+    function buyPlan() {
+      alert("🎟️ Premium Plan কেনা হয়েছে!");
+    }
+
+    function showWithdrawModal() {
+      alert("💸 Withdraw Request Submitted!\nAdmin এপ্রুভ করবে।");
+    }
+
+    function editProfile() {
+      alert("📝 প্রোফাইল এডিট করুন");
+    }
+
+    function showHistory() {
+      alert("📜 উত্তোলন ইতিহাস:\n\n✅ ৫০০ ৳ — Approved");
+    }
+
+    function showNotifications() {
+      alert("🔔 নতুন অফার আসছে!");
+    }
+
+    function showMembers(level) {
+      alert(`Level ${level} Members:\n\nএখনো কোনো মেম্বার নেই`);
+    }
+
+    // 5 Click → Admin Menu
+    function checkAdminClick() {
+      clickCount++;
+      if (clickCount >= 5) {
+        const pass = prompt("🔐 Enter Admin Password:");
+        if (pass === ADMIN_PASSWORD) {
+          document.getElementById('adminMenu').classList.remove('hidden');
+          document.getElementById('adminMenu').classList.add('flex');
+        } else {
+          alert("❌ Wrong Password!");
+        }
+        clickCount = 0;
+      }
+    }
+
+    function closeAdminMenu() {
+      document.getElementById('adminMenu').classList.add('hidden');
+      document.getElementById('adminMenu').classList.remove('flex');
+    }
+
+    function adminAction(action) {
+      closeAdminMenu();
+      
+      if (action === 'users') alert("👥 Users Management\nBalance Edit, Ban User, Send Message");
+      else if (action === 'withdraw') alert("💸 Withdraw Requests\nApprove / Reject");
+      else if (action === 'tasks') alert("📋 Tasks Management\nAdd New Task");
+      else if (action === 'plans') alert("💎 Plans Management\nNew Plan + bKash/Nagad");
+      else if (action === 'broadcast') alert("📢 Broadcast Message\nSend to All Users");
+      else if (action === 'fraud') alert("🚨 Fraud Logs");
+    }
+
+    window.onload = () => {
+      switchPage('home');
+      console.log('%c✅ Final Fixed Version Loaded - All buttons should work now', 'color:#10b981; font-size:14px');
+    };
+  </script>
+</body>
+</html>
