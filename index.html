@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EarnZone – Daily Task Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--primary:#1a56db;--accent2:#10b981;--bg:#f0f4ff;--card:#ffffff;--text:#1e293b;--muted:#64748b;--radius:16px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .header{background:linear-gradient(135deg,#1a56db,#1e40af);padding:0 16px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(26,86,219,.35);position:sticky;top:0;z-index:50}
+    .header-brand{display:flex;align-items:center;gap:10px}
+    .header-logo{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .header-title{font-family:'Syne',sans-serif;font-size:20px;color:#fff}
+    .header-title span{color:#fde68a}
+    .profile-btn{width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,.4);overflow:hidden;cursor:pointer}
+    .profile-btn img{width:100%;height:100%;object-fit:cover}
+    .hero{margin:16px;background:linear-gradient(135deg,#1a56db,#7c3aed);border-radius:var(--radius);padding:20px 20px 18px;color:#fff;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;right:-20px;top:-20px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07)}
+    .hero-tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+    .hero h2{font-family:'Syne',sans-serif;font-size:22px;line-height:1.25;margin-bottom:5px}
+    .hero p{font-size:13px;opacity:.8}
+    .hero-stats{display:flex;gap:10px;margin-top:14px}
+    .hero-stat{background:rgba(255,255,255,.12);border-radius:10px;padding:8px 14px;text-align:center;flex:1}
+    .hero-stat-val{font-size:20px;font-weight:800;color:#fde68a}
+    .hero-stat-label{font-size:11px;opacity:.75}
+    .section-title{padding:4px 16px 10px;font-family:'Syne',sans-serif;font-size:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+    .section-title::after{content:'';flex:1;height:1px;background:#e2e8f0}
+    .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 100px}
+    .task-card{background:var(--card);border-radius:var(--radius);padding:16px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1.5px solid #e8eef8;display:flex;flex-direction:column;gap:8px;animation:fadeUp .4s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .task-card:nth-child(1){animation-delay:.05s}.task-card:nth-child(2){animation-delay:.10s}.task-card:nth-child(3){animation-delay:.15s}.task-card:nth-child(4){animation-delay:.20s}.task-card:nth-child(5){animation-delay:.25s}.task-card:nth-child(6){animation-delay:.30s}.task-card:nth-child(7){animation-delay:.35s}.task-card:nth-child(8){animation-delay:.40s}.task-card:nth-child(9){animation-delay:.45s}.task-card:nth-child(10){animation-delay:.50s}
+    .task-num{font-size:11px;font-weight:700;color:var(--primary);background:#eff6ff;padding:3px 9px;border-radius:20px;width:fit-content}
+    .task-icon{font-size:28px;text-align:center}
+    .task-label{font-size:13px;font-weight:700;text-align:center}
+    .task-reward{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:700;color:var(--accent2)}
+    .btn-start{width:100%;padding:10px 0;border-radius:10px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;box-shadow:0 4px 12px rgba(26,86,219,.25);transition:transform .15s}
+    .btn-start:hover{transform:translateY(-2px)}
+    .btn-locked{width:100%;padding:10px 0;border-radius:10px;border:none;background:#f1f5f9;color:#94a3b8;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;cursor:not-allowed}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(4px);z-index:100;align-items:flex-end;justify-content:center}
+    .overlay.show{display:flex;animation:fadeIn .2s ease}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal{background:#fff;width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:20px 18px 32px;animation:slideUp .3s cubic-bezier(.22,1,.36,1);max-height:92vh;overflow-y:auto}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-drag{width:40px;height:4px;background:#e2e8f0;border-radius:4px;margin:0 auto 16px}
+    .modal-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .modal-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#1a56db,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .modal-title{font-family:'Syne',sans-serif;font-size:18px}
+    .modal-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .warning-box{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:13px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start}
+    .warning-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+    .warning-text{font-size:13px;color:#92400e;line-height:1.55}
+    .warning-text strong{color:#c2410c;font-weight:800}
+    .danger-box{background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:13px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start}
+    .danger-text{font-size:13px;color:#991b1b;line-height:1.55}
+    .danger-text strong{font-weight:800;color:#dc2626}
+    .steps-box{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:13px;margin-bottom:16px}
+    .steps-title{font-size:12px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+    .step-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+    .step-item:last-child{margin-bottom:0}
+    .step-num{width:20px;height:20px;border-radius:50%;background:var(--accent2);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .step-text{font-size:13px;color:#166534;line-height:1.4}
+    .btn-open{width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,#1a56db,#3b82f6);color:#fff;box-shadow:0 6px 20px rgba(26,86,219,.35);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s}
+    .btn-open:hover{transform:translateY(-2px)}
+    .btn-cancel{width:100%;padding:12px;border-radius:14px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;background:#f1f5f9;color:var(--muted);margin-top:8px}
+    .bottom-notice{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;padding:11px 16px;display:flex;align-items:center;gap:10px;font-size:12px;box-shadow:0 -4px 20px rgba(0,0,0,.2);z-index:40}
+    .notice-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 1.5s infinite;flex-shrink:0}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .pw-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:200;align-items:center;justify-content:center}
+    .pw-overlay.show{display:flex}
+    .pw-box{background:#fff;border-radius:20px;padding:28px 24px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .pw-title{font-family:'Syne',sans-serif;font-size:18px;margin-bottom:16px}
+    .pw-input{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:15px;font-family:'Nunito',sans-serif;margin-bottom:12px;outline:none}
+    .pw-input:focus{border-color:var(--primary)}
+    .pw-btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer}
+    #adminPanel{display:none;padding:16px;margin-bottom:80px}
+    .admin-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+    .admin-title{font-family:'Syne',sans-serif;font-size:18px;color:var(--primary);margin-bottom:16px}
+    .admin-input{width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:8px;font-size:13px;font-family:'Nunito',sans-serif}
+    .admin-add-btn{background:#eff6ff;color:var(--primary);border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px}
+    .admin-save-btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">💰</div>
+    <div class="header-title">Earn<span>Zone</span></div>
+  </div>
+  <div class="profile-btn" id="profileBtn">
+    <img src="https://i.pravatar.cc/40?img=3" alt="profile">
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-tag">🔥 Live Tasks</div>
+  <h2>Complete Tasks,<br>Earn Real Money!</h2>
+  <p>প্রতিদিন টাস্ক করুন এবং আয় করুন</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val" id="totalTasks">10</div><div class="hero-stat-label">Total Tasks</div></div>
+    <div class="hero-stat"><div class="hero-stat-val" id="doneTasks">0</div><div class="hero-stat-label">Completed</div></div>
+    <div class="hero-stat"><div class="hero-stat-val" id="pendingTasks">10</div><div class="hero-stat-label">Remaining</div></div>
+  </div>
+</div>
+
+<div class="section-title">📋 Today's Tasks</div>
+<div class="cards-grid" id="cards"></div>
+
+<div class="bottom-notice">
+  <div class="notice-dot"></div>
+  <span>⚠️ টাস্ক করতে <strong>অ্যাপ ডাউনলোড করতে হবে</strong> — না হলে কাজ রিজেক্ট হবে!</span>
+</div>
+
+<div class="overlay" id="taskOverlay">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <div class="modal-icon" id="modalIcon">📱</div>
+      <div>
+        <div class="modal-title" id="modalTitle">Task শুরু করুন</div>
+        <div class="modal-sub">নিচের নির্দেশনা মনোযোগ দিয়ে পড়ুন</div>
+      </div>
+    </div>
+    <div class="warning-box">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">
+        <strong>গুরুত্বপূর্ণ নোটিশ!</strong><br>
+        লিংকে প্রবেশ করার পর যদি কোনো <strong>অ্যাপ ডাউনলোড</strong> করতে বলে, তাহলে <strong>অবশ্যই ডাউনলোড করুন।</strong> অন্যথায় আপনার কাজ <strong>রিজেক্ট</strong> হয়ে যাবে এবং পেমেন্ট পাবেন না।
+      </div>
+    </div>
+    <div class="danger-box">
+      <div class="warning-icon">🚫</div>
+      <div class="danger-text">
+        <strong>অ্যাপ ডাউনলোড না করলে:</strong><br>
+        ✗ Task Rejected হবে<br>
+        ✗ Payment দেওয়া হবে না<br>
+        ✗ Account Suspend হতে পারে
+      </div>
+    </div>
+    <div class="steps-box">
+      <div class="steps-title">✅ কীভাবে কাজ করবেন</div>
+      <div class="step-item"><div class="step-num">1</div><div class="step-text">"Open Task" বাটনে ক্লিক করুন</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text">লিংক খুললে পেজটি ভালোভাবে দেখুন</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text">অ্যাপ ডাউনলোড করতে বললে <strong>অবশ্যই ডাউনলোড করুন</strong></div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-text">ডাউনলোড হলে ফিরে আসুন ও পরের টাস্ক করুন</div></div>
+    </div>
+    <button class="btn-open" id="openTaskBtn">🚀 Open Task Now</button>
+    <button class="btn-cancel" onclick="closeTaskModal()">বাতিল করুন</button>
+  </div>
+</div>
+
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-box">
+    <div class="pw-title">🔐 Admin Login</div>
+    <input type="password" id="passwordInput" class="pw-input" placeholder="Password লিখুন...">
+    <button class="pw-btn" onclick="checkPassword()">Login করুন</button>
+  </div>
+</div>
+
+<div id="adminPanel">
+  <div class="admin-card">
+    <div class="admin-title">Admin Panel</div>
+    <div id="linkInputs"></div>
+    <button class="admin-add-btn" onclick="addLink()">+ নতুন লিংক যোগ করুন</button>
+    <button class="admin-save-btn" onclick="saveSettings()">Save Settings</button>
+  </div>
+</div>
+
+<script>
+const PASSWORD="153781";
+const DEFAULT_LINKS=["https://omg10.com/4/10915711","https://omg10.com/4/10096410","https://omg10.com/4/10907977","https://omg10.com/4/10137060","https://omg10.com/4/10942880","https://omg10.com/4/10909412","https://omg10.com/4/10187474","https://omg10.com/4/10123818","https://omg10.com/4/10942879","https://omg10.com/4/10963664"];
+const ICONS=["📱","💎","🎯","🔥","⚡","🎁","💰","🏆","🌟","✨"];
+let pendingLink=null,pendingKey=null;
+
+function getLinks(){const s=localStorage.getItem("links");if(s){const p=JSON.parse(s);if(p&&p.length>0)return p;}return DEFAULT_LINKS;}
+
+function openTaskModal(link,key,idx){pendingLink=link;pendingKey=key;document.getElementById("modalIcon").textContent=ICONS[idx]||"📱";document.getElementById("modalTitle").textContent="Task "+(idx+1)+" শুরু করুন";document.getElementById("taskOverlay").classList.add("show");}
+
+function closeTaskModal(){document.getElementById("taskOverlay").classList.remove("show");pendingLink=null;pendingKey=null;}
+
+document.getElementById("openTaskBtn").onclick=()=>{if(!pendingLink)return;window.open(pendingLink,"_blank");localStorage.setItem(pendingKey,Date.now());closeTaskModal();location.reload();};
+
+document.getElementById("taskOverlay").addEventListener("click",function(e){if(e.target===this)closeTaskModal();});
+
+function renderCards(){
+  const container=document.getElementById("cards");
+  container.innerHTML="";
+  const links=getLinks();
+  let done=0;
+  links.forEach((link,i)=>{
+    const key="btn_"+i;
+    const last=localStorage.getItem(key);
+    const now=Date.now();
+    let locked=false,remaining=0;
+    if(last){const diff=now-parseInt(last);if(diff<86400000){locked=true;remaining=86400000-diff;}}
+    if(locked)done++;
+    const card=document.createElement("div");
+    card.className="task-card";
+    card.innerHTML='<div class="task-num">Task '+(i+1)+'</div><div class="task-icon">'+(ICONS[i]||"💰")+'</div><div class="task-label">Task '+(i+1)+'</div><div class="task-reward">Complete & Earn</div>';
+    const btn=document.createElement("button");
+    if(locked){
+      btn.className="btn-locked";
+      let rem=remaining;
+      function tick(){const h=Math.floor(rem/3600000);const m=Math.floor((rem%3600000)/60000);const s=Math.floor((rem%60000)/1000);btn.textContent="🔒 "+h+"h "+m+"m "+s+"s";rem-=1000;if(rem<=0)location.reload();}
+      tick();setInterval(tick,1000);
+    }else{
+      btn.className="btn-start";
+      btn.textContent="▶ Start Task";
+      btn.onclick=()=>openTaskModal(link,key,i);
+    }
+    card.appendChild(btn);
+    container.appendChild(card);
+  });
+  document.getElementById("totalTasks").textContent=links.length;
+  document.getElementById("doneTasks").textContent=done;
+  document.getElementById("pendingTasks").textContent=links.length-done;
+}
+
+function saveSettings(){const inputs=document.querySelectorAll(".admin-input");const links=[...inputs].map(i=>i.value.trim()).filter(Boolean);localStorage.setItem("links",JSON.stringify(links));alert("Saved!");location.reload();}
+function addLink(){const c=document.getElementById("linkInputs");const inp=document.createElement("input");inp.placeholder="লিংক লিখুন...";inp.className="admin-input";c.appendChild(inp);}
+function renderAdmin(){const c=document.getElementById("linkInputs");c.innerHTML="";getLinks().forEach(link=>{const inp=document.createElement("input");inp.value=link;inp.className="admin-input";c.appendChild(inp);});}
+function checkPassword(){const val=document.getElementById("passwordInput").value;if(val===PASSWORD){document.getElementById("pwOverlay").classList.remove("show");document.getElementById("adminPanel").style.display="block";renderAdmin();}else{alert("ভুল পাসওয়ার্ড");}}
+
+let clicks=0;
+document.getElementById("profileBtn").onclick=()=>{clicks++;if(clicks===5)document.getElementById("pwOverlay").classList.add("show");};
+
+renderCards();
+</script>
+</body>
+</html>
