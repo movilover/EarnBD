@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earning Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body id="body" class="bg-blue-50 font-sans">
+
+  <!-- Header -->
+  <div id="header" class="bg-blue-600 text-white p-4 flex justify-between items-center">
+    <h1 class="font-bold text-lg">Earning Dashboard</h1>
+    <img id="profile" src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full cursor-pointer border-2 border-white">
+  </div>
+
+  <!-- Banner -->
+  <div class="p-4">
+    <div class="bg-white rounded-xl shadow p-4 text-center">
+      <h2 class="text-blue-600 font-semibold">Daily Earning Tasks 💸</h2>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div id="cards" class="grid grid-cols-2 gap-4 p-4"></div>
+
+  <!-- Password Modal -->
+  <div id="loginBox" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-xl w-80">
+      <h3 class="font-bold mb-2">Enter Admin Password</h3>
+      <input id="passwordInput" type="password" class="w-full p-2 border rounded mb-2">
+      <button onclick="checkPassword()" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="hidden p-4">
+    <div class="bg-white border rounded-xl p-4 shadow">
+
+      <h3 class="text-blue-600 font-bold mb-3">Admin Panel</h3>
+
+      <!-- Links -->
+      <div id="linkInputs"></div>
+      <button onclick="addLink()" class="bg-gray-200 px-2 py-1 rounded mb-2">+ Add Link</button>
+
+      <!-- Color -->
+      <select id="colorSelect" class="w-full p-2 border rounded mb-3">
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="red">Red</option>
+        <option value="purple">Purple</option>
+      </select>
+
+      <button onclick="saveSettings()" class="w-full bg-blue-600 text-white py-2 rounded">
+        Save Settings
+      </button>
+
+    </div>
+  </div>
+
+<script>
+  const PASSWORD = "153781";
+
+  function getLinks() {
+    return JSON.parse(localStorage.getItem("links")) || [];
+  }
+
+  function saveSettings() {
+    const inputs = document.querySelectorAll(".linkInput");
+    const links = [];
+    inputs.forEach(i => links.push(i.value));
+
+    localStorage.setItem("links", JSON.stringify(links));
+
+    const color = document.getElementById("colorSelect").value;
+    localStorage.setItem("theme", color);
+
+    alert("Saved ✅");
+    location.reload();
+  }
+
+  function addLink() {
+    const container = document.getElementById("linkInputs");
+    const input = document.createElement("input");
+    input.placeholder = "Enter link...";
+    input.className = "linkInput w-full mb-2 p-2 border rounded";
+    container.appendChild(input);
+  }
+
+  function renderAdmin() {
+    const container = document.getElementById("linkInputs");
+    container.innerHTML = "";
+    const links = getLinks();
+
+    links.forEach(link => {
+      const input = document.createElement("input");
+      input.value = link;
+      input.className = "linkInput w-full mb-2 p-2 border rounded";
+      container.appendChild(input);
+    });
+  }
+
+  function renderCards() {
+    const container = document.getElementById("cards");
+    container.innerHTML = "";
+    const links = getLinks();
+
+    links.forEach((link, i) => {
+      const key = "btn_" + i;
+      const last = localStorage.getItem(key);
+      const now = Date.now();
+
+      let locked = false, remaining = 0;
+
+      if (last) {
+        let diff = now - parseInt(last);
+        if (diff < 86400000) {
+          locked = true;
+          remaining = 86400000 - diff;
+        }
+      }
+
+      const div = document.createElement("div");
+      div.className = "bg-white p-4 rounded-xl shadow text-center";
+
+      const btn = document.createElement("button");
+      btn.className = "w-full py-2 rounded-lg font-semibold";
+
+      function timer() {
+        if (!locked) return;
+
+        let h = Math.floor(remaining / 3600000);
+        let m = Math.floor((remaining % 3600000) / 60000);
+        let s = Math.floor((remaining % 60000) / 1000);
+
+        btn.innerText = `Locked (${h}h ${m}m ${s}s)`;
+        remaining -= 1000;
+        if (remaining <= 0) location.reload();
+      }
+
+      if (locked) {
+        btn.className += " bg-gray-300 text-gray-600";
+        timer();
+        setInterval(timer, 1000);
+      } else {
+        btn.innerText = "Start Task";
+        btn.className += " bg-blue-600 text-white";
+
+        btn.onclick = () => {
+          window.open(link, "_blank");
+          localStorage.setItem(key, Date.now());
+          location.reload();
+        };
+      }
+
+      div.appendChild(btn);
+      container.appendChild(div);
+    });
+  }
+
+  // Theme Apply
+  function applyTheme() {
+    const color = localStorage.getItem("theme") || "blue";
+    const header = document.getElementById("header");
+
+    header.className = `bg-${color}-600 text-white p-4 flex justify-between items-center`;
+  }
+
+  // Password Check
+  function checkPassword() {
+    const val = document.getElementById("passwordInput").value;
+    if (val === PASSWORD) {
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
+      renderAdmin();
+    } else {
+      alert("Wrong Password ❌");
+    }
+  }
+
+  // Profile Click
+  let clicks = 0;
+  document.getElementById("profile").onclick = () => {
+    clicks++;
+    if (clicks === 5) {
+      document.getElementById("loginBox").classList.remove("hidden");
+    }
+  };
+
+  renderCards();
+  applyTheme();
+</script>
+
+</body>
+</html>
